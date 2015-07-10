@@ -1,8 +1,8 @@
 from django import forms
-from redactor.widgets import RedactorEditor
+from ckeditor.widgets import CKEditorWidget
 from .models import Question
 
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
-        widgets = {'answer': RedactorEditor()}
+        widgets = {'answer': CKEditorWidget()}
