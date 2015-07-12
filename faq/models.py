@@ -27,6 +27,27 @@ class Topic(models.Model):
     def __unicode__(self):
         return self.name
 
+class SubTopic(models.Model):
+    """
+    Generic Subtopics for FAQ question grouping
+    """
+    name = models.CharField(_('name'), max_length=150)
+    slug = models.SlugField(_('slug'), max_length=150)
+    sort_order = models.IntegerField(_('sort order'), default=0,
+        help_text=_('The order you would like the subtopic to be displayed.'))
+    topic = models.ForeignKey(Topic, related_name='subtopics')
+
+    def get_absolute_url(self):
+        return '/faq/' +self.topic.slug + '/' + self.slug
+
+    class Meta:
+        verbose_name = _("SubTopic")
+        verbose_name_plural = _("SubTopics")
+        ordering = ['sort_order', 'name']
+
+    def __unicode__(self):
+        return self.name
+
 class Question(models.Model):
     HEADER = 2
     ACTIVE = 1
@@ -40,6 +61,9 @@ class Question(models.Model):
     text = models.TextField(_('question'), help_text=_('The actual question itself.'))
     answer = models.TextField(_('answer'), blank=True, help_text=_('The answer text.'))
     topic = models.ForeignKey(Topic, verbose_name=_('topic'), related_name='questions')
+    subtopic = models.ForeignKey(SubTopic, verbose_name=_('subtopic'), 
+                                 related_name='questions', null=True, 
+                                 blank=True)
     slug = models.SlugField(_('slug'), max_length=100)
     status = models.IntegerField(_('status'),
         choices=STATUS_CHOICES, default=ACTIVE, 
